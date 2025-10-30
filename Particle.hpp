@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/Graphics.hpp>
 
 class Particle
 {
@@ -7,6 +8,7 @@ public:
     double vx, vy;
     double radius;
     double mass;
+    sf::Color color;
 
     // Konstruktor: pozycja (x,y), prędkość (vx,vy), promień r, masa m
     Particle(double x = 0.0, double y = 0.0,
