@@ -9,24 +9,24 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 project(particles-collision)
 
-# include(FetchContent)
 
 # # Define where to fetch Catch2 from
-# FetchContent_Declare(
-    # Catch2
-    # GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    # GIT_TAG        v3.6.0  # Or the latest stable tag
-# )
-# FetchContent_MakeAvailable(Catch2)
+include(FetchContent)
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        v3.6.0  # Or the latest stable tag
+)
+FetchContent_MakeAvailable(Catch2)
 
-# include(FetchContent)
-# FetchContent_Declare(SFML
-    # GIT_REPOSITORY https://github.com/SFML/SFML.git
-    # GIT_TAG 2.6.2
-    # GIT_SHALLOW ON
-    # EXCLUDE_FROM_ALL
-    # SYSTEM)
-# FetchContent_MakeAvailable(SFML)
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.2
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM)
+FetchContent_MakeAvailable(SFML)
 
 set(SOURCES
     Particle.cpp
@@ -35,8 +35,8 @@ set(SOURCES
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
 # find_package(SDL2 REQUIRED)
 # find_package(Armadillo REQUIRED) 
-find_package(Catch2 REQUIRED)
-find_package(SFML COMPONENTS graphics REQUIRED)
+# find_package(Catch2 REQUIRED)
+# find_package(SFML COMPONENTS graphics REQUIRED)
 
 
 # Add global definitions
