@@ -1,5 +1,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Window/Window.hpp>
 #include <cmath>
 #include <vector>
 
@@ -10,18 +12,30 @@ using namespace std;
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 800
 
-void handle_wall_collisions(Particle& particle) {
-    if (particle.x > WINDOW_WIDTH - particle.radius || particle.x < particle.radius) {
-        particle.vx = -particle.vx;
-    }
-    if (particle.y > WINDOW_HEIGHT - particle.radius || particle.y < particle.radius) {
-        particle.vy = -particle.vy;
-    }
+void handle_wall_collisions(const sf::Window& window, std::vector<Particle>& particles) {
+    int window_width = window.getSize().x;
+    int window_height = window.getSize().y;
 
-    particle.update(0.1);
+    for (auto& particle : particles) {
+        if (particle.x > window_width - particle.radius) {
+            particle.x = window_width - particle.radius;
+            particle.vx = -particle.vx;
+        } else if (particle.x < particle.radius) {
+            particle.x = particle.radius;
+            particle.vx = -particle.vx;
+        }
+
+        if (particle.y > window_height - particle.radius) {
+            particle.y = window_height - particle.radius;
+            particle.vy = -particle.vy;
+        } else if (particle.y < particle.radius) {
+            particle.y = particle.radius;
+            particle.vy = -particle.vy;
+        }
+    }
 }
 
-void handle_ball_collisions(Particle& p1, Particle& p2) {
+void handle_single_collision(Particle& p1, Particle& p2) {
     double dx = p2.x - p1.x;
     double dy = p2.y - p1.y;
     double dist = sqrt(dx * dx + dy * dy);
@@ -55,6 +69,14 @@ void handle_ball_collisions(Particle& p1, Particle& p2) {
     }
 }
 
+void handle_ball_collisions(std::vector<Particle>& particles) {
+    for (size_t i = 0; i < particles.size(); i++) {
+        for (size_t j = i + 1; j < particles.size(); j++) {
+            handle_single_collision(particles[i], particles[j]);
+        }
+    }
+}
+
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Particle collisions");
 
@@ -62,7 +84,7 @@ int main() {
 
     for (int i = 0; i < 100; i++) {
         Particle particle = Particle();
-        particle.randomize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        particle.randomize(window.getSize().x, window.getSize().y);
         particles.push_back(particle);
     }
 
@@ -72,23 +94,20 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::Resized) {
+                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                window.setView(sf::View(visibleArea));
+
+                handle_wall_collisions(window, particles);
+            }
         }
+
+        handle_wall_collisions(window, particles);
+        handle_ball_collisions(particles);
 
         for (auto& particle : particles) {
-            if (particle.x > WINDOW_WIDTH - particle.radius || particle.x < particle.radius) {
-                particle.vx = -particle.vx;
-            }
-            if (particle.y > WINDOW_HEIGHT - particle.radius || particle.y < particle.radius) {
-                particle.vy = -particle.vy;
-            }
-
             particle.update(0.1);
-        }
-
-        for (size_t i = 0; i < particles.size(); i++) {
-            for (size_t j = i + 1; j < particles.size(); j++) {
-                handle_ball_collisions(particles[i], particles[j]);
-            }
         }
 
         window.clear();
