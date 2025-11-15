@@ -8,14 +8,19 @@ void Particle::update(double dt) {
     y += vy * dt;
 }
 
-Particle Particle::randomize()
-{
-    x = static_cast<double>(rand() % 1000);
-    y = static_cast<double>(rand() % 800);
+Particle Particle::randomize(int s_width, int s_height) {
+    radius = static_cast<double>((rand() % 20) + 5);
+
+    double min_x = radius;
+    double min_y = radius;
+    double max_x = s_width - radius;
+    double max_y = s_height - radius;
+
+    x = std::clamp(static_cast<double>(rand() % s_width), min_x, max_x);
+    y = std::clamp(static_cast<double>(rand() % s_height), min_y, max_y);
     vx = static_cast<double>((rand() % 200) - 100) / 100.0;
     vy = static_cast<double>((rand() % 200) - 100) / 100.0;
-    radius = static_cast<double>((rand() % 20) + 10);
-    mass = radius * radius * 3.14; // Proporcjonalna do powierzchni
+    mass = radius * radius * 3.14;  // Proporcjonalna do powierzchni
     color = sf::Color(rand() % 255, rand() % 255, rand() % 255);
 
     return *this;
