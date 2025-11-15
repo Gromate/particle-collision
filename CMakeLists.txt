@@ -9,7 +9,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 project(particles-collision)
 
-
 # # Define where to fetch Catch2 from
 # include(FetchContent)
 # FetchContent_Declare(
@@ -33,17 +32,15 @@ set(SOURCES
 )
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
-# find_package(SDL2 REQUIRED)
-# find_package(Armadillo REQUIRED) 
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(MyTarget PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
 find_package(Catch2 REQUIRED)
 find_package(SFML COMPONENTS graphics REQUIRED)
 
-
-# Add global definitions
 add_definitions("-Wall")
-# include_directories(${SDL2_INCLUDE_DIR})
-# include_directories(${ARMADILLO_INCLUDE_DIRS})
-
 
 # add_executable(tests ../tests/test.cpp ${SOURCES})
 # target_link_libraries(tests Catch2::Catch2WithMain)
@@ -52,11 +49,7 @@ add_executable(particles-collision main.cpp ${SOURCES})
 set_property(TARGET particles-collision PROPERTY CXX_STANDARD 17)
 install(TARGETS particles-collision RUNTIME DESTINATION bin)
 
-# target_link_libraries(particles-collision ${SDL2_LIBRARIES})
-# target_link_libraries(particles-collision ${ARMADILLO_LIBRARIES})
 target_link_libraries(particles-collision PRIVATE sfml-graphics)
-
-# target_link_libraries(tests ${ARMADILLO_LIBRARIES})
 
 if(WIN32)
     add_custom_command(
