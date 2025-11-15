@@ -1,11 +1,9 @@
 #include "Particle.hpp"
-#include <cmath>
 
 Particle::Particle(double x, double y, double vx, double vy, double radius, double mass)
     : x(x), y(y), vx(vx), vy(vy), radius(radius), mass(mass) {}
 
-void Particle::update(double dt)
-{
+void Particle::update(double dt) {
     x += vx * dt;
     y += vy * dt;
 }

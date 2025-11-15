@@ -1,8 +1,12 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include "Particle.hpp"
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Window/Window.hpp>
+#include <cmath>
 #include <vector>
 #include <math.h>
+
+#include "Particle.hpp"
 
 using namespace std;
 
@@ -39,25 +43,38 @@ int main()
     for (int i = 0; i < 10; i++)
     {
         Particle particle = Particle();
-        particle.randomize();
+        particle.randomize(window.getSize().x, window.getSize().y);
         particles.push_back(particle);
     }
+
     // Start the game loop
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::Resized) {
+                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                window.setView(sf::View(visibleArea));
+
+                handle_wall_collisions(window, particles);
+            }
         }
 
-        // Clear screen
+        handle_wall_collisions(window, particles);
+        handle_ball_collisions(particles);
+
+        for (auto& particle : particles) {
+            particle.update(0.1);
+        }
+
         window.clear();
 
         for (auto &particle : particles)
         {
             sf::CircleShape shape(particle.radius);
+            shape.setOrigin(shape.getRadius(), shape.getRadius());
             shape.move(particle.x, particle.y);
             check_colission_with_walls(particle, WINDOW_WIDTH, WINDOW_HEIGHT);
             for (auto particle_possible_colission : particles)
