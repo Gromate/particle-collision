@@ -33,9 +33,6 @@ set(SOURCES
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(OpenMP)
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(MyTarget PUBLIC OpenMP::OpenMP_CXX)
-endif()
 
 find_package(Catch2 REQUIRED)
 find_package(SFML COMPONENTS graphics REQUIRED)
@@ -50,6 +47,9 @@ set_property(TARGET particles-collision PROPERTY CXX_STANDARD 17)
 install(TARGETS particles-collision RUNTIME DESTINATION bin)
 
 target_link_libraries(particles-collision PRIVATE sfml-graphics)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(particles-collision PUBLIC OpenMP::OpenMP_CXX)
+endif()
 
 if(WIN32)
     add_custom_command(
